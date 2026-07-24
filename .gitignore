@@ -8,3 +8,4 @@ scroll-site-generator/
 node_modules/
 *.log
 padel-website/
+.playwright-mcp/
