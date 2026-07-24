@@ -4,21 +4,28 @@ An Apple-style scroll film built from the supplied coffee video. The opening fil
 
 ## Run locally
 
-From this folder, start a static server:
-
-```powershell
-python -m http.server 4189
+```bash
+npm install
+npm run dev
 ```
 
-Then open <http://localhost:4189/>. The site must be served over HTTP; opening `index.html` directly prevents the frame manifest from loading in some browsers.
+Then open <http://localhost:3000/>.
+
+## Build
+
+```bash
+npm run build
+```
+
+Produces a static export in `out/`, deployable to Vercel or any static host.
 
 ## Asset pipeline
 
 - Source video: `assets/source-video.mp4` (ignored from git)
-- Scroll frames: `frames24/frame_0001.webp` through `frames24/frame_0192.webp`
-- Manifest: `frames/frames.json`
-- Supporting crops: `images/`
-- Scroll engine: `main.js`
+- Scroll frames: `public/frames24/frame_0001.webp` through `public/frames24/frame_0192.webp`
+- Manifest: `public/frames/frames.json`
+- Supporting crops: `public/images/`
+- Scroll engine: `public/main.js`
 
 The source film is 8 seconds at 1920×1080 / 24 FPS. Frames are exported at the source rate (24 fps) and 1400px width for smoother scroll scrubbing.
 
