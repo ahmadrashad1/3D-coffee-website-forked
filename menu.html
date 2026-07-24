@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171411">
+  <meta name="description" content="The EMBER menu — espresso, filter, cold brew, and pastries from small-batch, seasonal lots.">
+  <meta property="og:title" content="Menu — EMBER Coffee">
+  <meta property="og:description" content="Espresso, filter, cold brew, and pastries — order at the counter.">
+  <meta property="og:image" content="images/hero.webp">
+  <title>Menu — EMBER Coffee</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#menu-content">Skip to menu</a>
+  <nav id="brandnav" class="nav-dark" aria-label="Primary navigation">
+    <a class="wordmark" href="index.html"><strong>EMBER</strong><small>ROASTERS</small></a>
+    <div class="links"><a href="index.html#story">Our coffee</a><a href="index.html#craft">The roast</a><a href="index.html#gallery">Journal</a><a href="menu.html">Menu</a><a href="index.html#about">About</a><a href="mailto:hello@ember.coffee">Contact</a></div>
+    <a class="navcta" href="index.html#reserve">Order ahead</a>
+  </nav>
+  <main id="menu-content">
+    <section class="section">
+      <div class="blend-head" data-reveal>
+        <div><p class="kicker">The menu</p><h1 class="display">Order at<br><em>the counter.</em></h1></div>
+        <p class="lead">Small-batch, seasonal, and made to order — whether you're staying in or carrying it with you.</p>
+      </div>
+
+      <div class="menu-category" data-reveal>
+        <h2 class="menu-category-title">Espresso</h2>
+        <div class="menu-list">
+          <div class="menu-row"><div><strong>Espresso</strong><span class="menu-desc">Single or double shot, pulled to order.</span></div><span class="menu-price">$3.50</span></div>
+          <div class="menu-row"><div><strong>Cortado</strong><span class="menu-desc">Espresso softened with warm milk, equal parts.</span></div><span class="menu-price">$4.50</span></div>
+          <div class="menu-row"><div><strong>Cappuccino</strong><span class="menu-desc">Espresso, steamed milk, a proper cap of foam.</span></div><span class="menu-price">$5.00</span></div>
+          <div class="menu-row"><div><strong>Flat White</strong><span class="menu-desc">Double ristretto, microfoam, no nonsense.</span></div><span class="menu-price">$5.25</span></div>
+        </div>
+      </div>
+
+      <div class="menu-category" data-reveal>
+        <h2 class="menu-category-title">Filter</h2>
+        <div class="menu-list">
+          <div class="menu-row"><div><strong>Pour Over</strong><span class="menu-desc">Today's single-estate lot, brewed to order.</span></div><span class="menu-price">$5.50</span></div>
+          <div class="menu-row"><div><strong>Batch Brew</strong><span class="menu-desc">Our house blend, always fresh, always on.</span></div><span class="menu-price">$3.75</span></div>
+          <div class="menu-row"><div><strong>Drip</strong><span class="menu-desc">Classic filter coffee, brewed by the pot.</span></div><span class="menu-price">$3.25</span></div>
+        </div>
+      </div>
+
+      <div class="menu-category" data-reveal>
+        <h2 class="menu-category-title">Cold Brew</h2>
+        <div class="menu-list">
+          <div class="menu-row"><div><strong>Cold Brew</strong><span class="menu-desc">Steeped 18 hours, served over ice.</span></div><span class="menu-price">$5.00</span></div>
+          <div class="menu-row"><div><strong>Iced Latte</strong><span class="menu-desc">Espresso, cold milk, plenty of ice.</span></div><span class="menu-price">$5.50</span></div>
+          <div class="menu-row"><div><strong>Sparkling Cold Brew</strong><span class="menu-desc">Cold brew, soda, a citrus twist.</span></div><span class="menu-price">$6.00</span></div>
+        </div>
+      </div>
+
+      <div class="menu-category" data-reveal>
+        <h2 class="menu-category-title">Pastries</h2>
+        <div class="menu-list">
+          <div class="menu-row"><div><strong>Butter Croissant</strong><span class="menu-desc">Baked fresh each morning.</span></div><span class="menu-price">$3.75</span></div>
+          <div class="menu-row"><div><strong>Almond Financier</strong><span class="menu-desc">Toasted almond, brown butter.</span></div><span class="menu-price">$4.00</span></div>
+          <div class="menu-row"><div><strong>Banana Bread</strong><span class="menu-desc">Studded with toasted walnuts.</span></div><span class="menu-price">$4.25</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="footer-inner"><div class="footer-top"><div class="footer-brand"><div class="footer-mark">EMBER</div><p class="footer-tag">Coffee for mornings already in motion.</p></div><div class="footer-col"><h3>Explore</h3><a href="index.html#story">Our story</a><a href="index.html#craft">The roast</a><a href="menu.html">Menu</a></div><div class="footer-col"><h3>Visit</h3><a href="index.html#gallery">Journal</a><a href="mailto:hello@ember.coffee">Cafés</a><a href="mailto:hello@ember.coffee">Stockists</a></div><div class="footer-col"><h3>Follow</h3><a href="mailto:hello@ember.coffee">Instagram</a><a href="mailto:hello@ember.coffee">Contact</a><a href="mailto:hello@ember.coffee">Wholesale</a></div></div><div class="footer-bottom"><span>© 2026 EMBER Coffee</span><span>Roasted slowly · carried daily</span></div></div></footer>
+  <script>
+    const io=new IntersectionObserver(entries=>entries.forEach(entry=>entry.isIntersecting&&entry.target.classList.add('in')),{threshold:.14});document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+    const revealNow=()=>document.querySelectorAll('[data-reveal]:not(.in)').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<innerHeight*.92&&r.bottom>0)el.classList.add('in')});addEventListener('scroll',revealNow,{passive:true});revealNow();
+    const nav=document.getElementById('brandnav');const filmEnd=()=>(document.getElementById('track')?.offsetHeight??innerHeight*3)-innerHeight;addEventListener('scroll',()=>nav.classList.toggle('on',scrollY>filmEnd()*.96),{passive:true});
+  </script>
+</body>
+</html>
