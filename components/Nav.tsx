@@ -8,15 +8,22 @@ export default function Nav({ variant }: { variant: "home" | "menu" }) {
       className={variant === "menu" ? "nav-dark" : undefined}
       aria-label="Primary navigation"
     >
-      <Link className="wordmark" href={variant === "menu" ? "/" : "#top"}>
-        <strong>EMBER</strong>
-        <small>ROASTERS</small>
-      </Link>
+      {variant === "menu" ? (
+        <a className="wordmark" href="/">
+          <strong>EMBER</strong>
+          <small>ROASTERS</small>
+        </a>
+      ) : (
+        <Link className="wordmark" href="#top">
+          <strong>EMBER</strong>
+          <small>ROASTERS</small>
+        </Link>
+      )}
       <div className="links">
         <Link href={`${base}#story`}>Our coffee</Link>
         <Link href={`${base}#craft`}>The roast</Link>
         <Link href={`${base}#gallery`}>Journal</Link>
-        <Link href="/menu">Menu</Link>
+        <a href="/menu">Menu</a>
         <Link href={`${base}#about`}>About</Link>
         <a href="mailto:hello@ember.coffee">Contact</a>
       </div>
