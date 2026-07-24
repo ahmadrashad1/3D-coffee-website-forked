@@ -15,7 +15,7 @@ export default function Footer({ variant }: { variant: "home" | "menu" }) {
             <Link href={`${base}#story`}>Our story</Link>
             <Link href={`${base}#craft`}>The roast</Link>
             <Link href={`${base}#blend`}>The blend</Link>
-            <Link href="/menu">Menu</Link>
+            <a href="/menu">Menu</a>
           </div>
           <div className="footer-col">
             <h3>Visit</h3>

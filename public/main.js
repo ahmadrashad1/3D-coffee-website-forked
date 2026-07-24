@@ -1,4 +1,4 @@
-/* AURUM One — Apple-style scroll film
+/* EMBER — Apple-style scroll film
    Canvas image-sequence scrubber: scroll position drives frame index.
    Frames are kept as compressed blobs; only a sliding window around the
    current frame is decoded to ImageBitmaps (keeps RAM sane on mobile). */
