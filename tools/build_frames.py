@@ -15,8 +15,8 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-FRAMES_DIR = ROOT / "frames24"
-MANIFEST = ROOT / "frames" / "frames.json"
+FRAMES_DIR = ROOT / "public" / "frames24"
+MANIFEST = ROOT / "public" / "frames" / "frames.json"
 FPS = 24
 
 
@@ -49,7 +49,7 @@ def encode_webp(png_dir: Path, out_dir: Path, quality: int) -> int:
 def write_manifest(count: int):
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST.write_text(
-        json.dumps({"count": count, "pattern": "frames24/frame_%04d.webp"}, indent=2) + "\n"
+        json.dumps({"count": count, "pattern": "/frames24/frame_%04d.webp"}, indent=2) + "\n"
     )
 
 
