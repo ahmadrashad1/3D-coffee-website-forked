@@ -12,14 +12,30 @@ export default function Footer({ variant }: { variant: "home" | "menu" }) {
           </div>
           <div className="footer-col">
             <h3>Explore</h3>
-            <Link href={`${base}#story`}>Our story</Link>
-            <Link href={`${base}#craft`}>The roast</Link>
-            <Link href={`${base}#blend`}>The blend</Link>
+            {variant === "menu" ? (
+              <a href={`${base}#story`}>Our story</a>
+            ) : (
+              <Link href="#story">Our story</Link>
+            )}
+            {variant === "menu" ? (
+              <a href={`${base}#craft`}>The roast</a>
+            ) : (
+              <Link href="#craft">The roast</Link>
+            )}
+            {variant === "menu" ? (
+              <a href={`${base}#blend`}>The blend</a>
+            ) : (
+              <Link href="#blend">The blend</Link>
+            )}
             <a href="/menu">Menu</a>
           </div>
           <div className="footer-col">
             <h3>Visit</h3>
-            <Link href={`${base}#gallery`}>Journal</Link>
+            {variant === "menu" ? (
+              <a href={`${base}#gallery`}>Journal</a>
+            ) : (
+              <Link href="#gallery">Journal</Link>
+            )}
             <a href="mailto:hello@ember.coffee">Cafés</a>
             <a href="mailto:hello@ember.coffee">Stockists</a>
           </div>
