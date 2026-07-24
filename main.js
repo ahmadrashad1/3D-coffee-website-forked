@@ -124,6 +124,9 @@ function resize() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = Math.round(canvas.clientWidth * dpr);
   canvas.height = Math.round(canvas.clientHeight * dpr);
+  // assigning canvas.width/height resets 2D context state, so reapply smoothing
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
   state.current = -1; // force redraw
 }
 
@@ -242,6 +245,18 @@ function devPlaceholder(msg) {
 
 window.addEventListener("resize", resize);
 resize();
+
+// In-page nav links (brandnav, skip-link) still glide smoothly on click,
+// without a global scroll-behavior:smooth fighting the frame-scrubber's
+// raw scrollY reads on every wheel/trackpad tick.
+for (const a of document.querySelectorAll('a[href^="#"]')) {
+  a.addEventListener("click", (e) => {
+    const target = document.getElementById(a.getAttribute("href").slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
 
 loadManifest()
   .then((m) => {
