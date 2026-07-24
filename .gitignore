@@ -9,3 +9,6 @@ node_modules/
 *.log
 padel-website/
 .playwright-mcp/
+.next/
+out/
+next-env.d.ts
