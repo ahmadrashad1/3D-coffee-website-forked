@@ -25,7 +25,7 @@ The site currently consists of two hand-written HTML pages (`index.html`, `menu.
 | `styles.css` | `app/globals.css` | Content unchanged, imported once in `app/layout.tsx` |
 | `images/`, `frames24/`, `frames/` | `public/images/`, `public/frames24/`, `public/frames/` | Next.js serves `public/` at the site root |
 | `main.js` | `public/main.js` | Unchanged logic; loaded via `next/script` |
-| `tools/build_frames.py` | Unchanged in place | Build-time asset generator, unrelated to the Next.js runtime |
+| `tools/build_frames.py` | Stays at the same path | Build-time asset generator, unrelated to the Next.js runtime — but its hardcoded output paths (`FRAMES_DIR`, `MANIFEST`) get repointed at `public/frames24` / `public/frames`, since assets now live there. Without this, a future re-export would silently write to the deleted old location. |
 
 ## Scripts
 
