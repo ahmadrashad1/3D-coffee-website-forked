@@ -43,10 +43,25 @@ const state = {
 
 /* ── loading ───────────────────────────────────────────── */
 
+const RETRY_DELAYS = [300, 800, 1500]; // ms, between fetch attempts
+
+async function withRetry(fn) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (attempt >= RETRY_DELAYS.length) throw err;
+      await new Promise((r) => setTimeout(r, RETRY_DELAYS[attempt]));
+    }
+  }
+}
+
 async function loadManifest() {
-  const res = await fetch("/frames/frames.json");
-  if (!res.ok) throw new Error("no manifest");
-  return res.json(); // { count, pattern }
+  return withRetry(async () => {
+    const res = await fetch("/frames/frames.json");
+    if (!res.ok) throw new Error("no manifest");
+    return res.json(); // { count, pattern }
+  });
 }
 
 function frameURL(i) {
@@ -55,9 +70,13 @@ function frameURL(i) {
 
 async function fetchBlob(i) {
   if (state.blobs[i]) return state.blobs[i];
-  const res = await fetch(frameURL(i));
-  state.blobs[i] = await res.blob();
-  return state.blobs[i];
+  const blob = await withRetry(async () => {
+    const res = await fetch(frameURL(i));
+    if (!res.ok) throw new Error(`frame ${i} fetch failed: ${res.status}`);
+    return res.blob();
+  });
+  state.blobs[i] = blob;
+  return blob;
 }
 
 async function decode(i) {
@@ -92,14 +111,18 @@ async function preload() {
   const { count } = state;
   const EAGER = Math.min(Math.ceil(count * 0.15), 80);
 
-  // eager: fetch the opening chapter and decode its start — gates the loader
+  // eager: fetch the opening chapter and decode its start — gates the loader.
+  // A single frame's retries exhausting (allSettled, not all) must not block
+  // the rest of the site from ever becoming interactive.
   let done = 0;
-  await Promise.all(
+  await Promise.allSettled(
     Array.from({ length: EAGER }, (_, i) =>
-      fetchBlob(i).then(() => {
-        done++;
-        loadbar.style.width = `${(done / EAGER) * 100}%`;
-      })
+      fetchBlob(i)
+        .then(() => {
+          done++;
+          loadbar.style.width = `${(done / EAGER) * 100}%`;
+        })
+        .catch((err) => console.warn(`eager frame ${i} failed after retries`, err))
     )
   );
   await decode(0);
@@ -112,7 +135,11 @@ async function preload() {
     Array.from({ length: 4 }, async () => {
       while (next < count) {
         const i = next++;
-        try { await fetchBlob(i); } catch { /* refetched on demand */ }
+        try {
+          await fetchBlob(i);
+        } catch (err) {
+          console.warn(`background frame ${i} failed after retries`, err);
+        }
       }
     })
   );
@@ -266,4 +293,7 @@ loadManifest()
     requestAnimationFrame(tick);
     return preload();
   })
-  .catch(() => devPlaceholder("frames not built yet — run tools/build_frames.py"));
+  .catch((err) => {
+    console.error("scroll-film failed to boot (manifest unreachable after retries)", err);
+    devPlaceholder("frames not built yet — run tools/build_frames.py");
+  });
