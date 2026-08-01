@@ -36,7 +36,12 @@ export async function POST(request: Request) {
   for (const raw of items as OrderLine[]) {
     const { menuItemId, quantity } = raw ?? {};
 
-    if (typeof menuItemId !== "string" || typeof quantity !== "number" || quantity < 1) {
+    if (
+      typeof menuItemId !== "string" ||
+      typeof quantity !== "number" ||
+      !Number.isInteger(quantity) ||
+      quantity < 1
+    ) {
       return NextResponse.json(
         { error: `Invalid line item: ${JSON.stringify(raw)}` },
         { status: 400 }
