@@ -5,6 +5,8 @@ An Apple-style scroll film built from the supplied coffee video. The opening fil
 ## Run locally
 
 ```bash
+docker compose up -d db
+npx prisma migrate dev
 npm install
 npm run dev
 ```
@@ -15,9 +17,14 @@ Then open <http://localhost:3000/>.
 
 ```bash
 npm run build
+npm run start
 ```
 
-Produces a static export in `out/`, deployable to Vercel or any static host.
+Or build and run the full stack (app + Postgres) in Docker:
+
+```bash
+docker compose up --build
+```
 
 ## Asset pipeline
 
@@ -28,6 +35,10 @@ Produces a static export in `out/`, deployable to Vercel or any static host.
 - Scroll engine: `public/main.js`
 
 The source film is 8 seconds at 1920×1080 / 24 FPS. Frames are exported at the source rate (24 fps) and 1400px width for smoother scroll scrubbing.
+
+## Ordering demo
+
+`/menu` has "Add to cart" on every item. The cart (top-right nav icon) leads to `/checkout`, which posts to `POST /api/orders` — Postgres stores the order via Prisma, prices are always recomputed server-side from `lib/menu-data.ts`. `/order-confirmation/[id]` shows the receipt; `/admin/orders` lists every order ever placed (no authentication — demo only, not for production use).
 
 ## Content note
 
