@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import SiteScripts from "@/components/SiteScripts";
+import AddToCartButton from "@/components/AddToCartButton";
 import { menuCategories, menuItems, formatPrice } from "@/lib/menu-data";
 
 export const metadata: Metadata = {
@@ -51,7 +52,10 @@ export default function MenuPage() {
                         <strong>{item.name}</strong>
                         <span className="menu-desc">{item.description}</span>
                       </div>
-                      <span className="menu-price">{formatPrice(item.priceCents)}</span>
+                      <div className="menu-row-actions">
+                        <span className="menu-price">{formatPrice(item.priceCents)}</span>
+                        <AddToCartButton menuItemId={item.id} />
+                      </div>
                     </div>
                   ))}
               </div>

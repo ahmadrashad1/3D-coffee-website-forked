@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CartButton from "@/components/CartButton";
 
 export default function Nav({ variant }: { variant: "home" | "menu" }) {
   const base = variant === "menu" ? "/" : "";
@@ -43,15 +44,12 @@ export default function Nav({ variant }: { variant: "home" | "menu" }) {
         )}
         <a href="mailto:hello@ember.coffee">Contact</a>
       </div>
-      {variant === "menu" ? (
-        <a className="navcta" href={`${base}#reserve`}>
+      <div className="nav-actions">
+        <CartButton />
+        <a className="navcta" href="/menu">
           Order ahead
         </a>
-      ) : (
-        <Link className="navcta" href="#reserve">
-          Order ahead
-        </Link>
-      )}
+      </div>
     </nav>
   );
 }
