@@ -1,18 +1,23 @@
-# Build stage: produce the static export (out/)
-FROM node:20-alpine AS builder
+# Build stage: compile the Next.js server
+FROM node:20-alpine AS deps
 WORKDIR /app
-
 COPY package.json package-lock.json ./
 RUN npm ci
 
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# Runtime stage: serve the static export with nginx
-FROM nginx:alpine AS runner
+# Runtime stage: run the Next.js standalone server directly
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
 
-COPY --from=builder /app/out /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+CMD ["node", "server.js"]
