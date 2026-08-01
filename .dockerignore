@@ -10,3 +10,4 @@ docs
 /*.png
 project-memory.md
 README.md
+.env

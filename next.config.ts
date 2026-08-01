@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  output: "standalone",
   // Allows `npm run dev` to be reached from other devices on the LAN
   // (e.g. testing on a phone via the printed Network URL) without Next.js
   // blocking cross-origin dev-only requests (HMR websocket, etc.).
