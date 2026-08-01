@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ember
+      POSTGRES_USER: ember
+      POSTGRES_PASSWORD: ember
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ember -d ember"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://ember:ember@db:5432/ember
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
