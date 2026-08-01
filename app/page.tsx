@@ -309,10 +309,7 @@ export default function HomePage() {
                 Freshly roasted. Packed in small batches. Ready for wherever
                 morning takes you.
               </p>
-              <a
-                className="cta"
-                href="mailto:hello@ember.coffee?subject=EMBER%20coffee"
-              >
+              <a className="cta" href="/menu">
                 Shop the blend
               </a>
             </div>
