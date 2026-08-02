@@ -3,6 +3,7 @@ import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
 import { AuthProvider } from "@/components/AuthContext";
 import { getCurrentUser } from "@/lib/auth";
+import { getCartPayload } from "@/lib/cart";
 
 export const metadata: Metadata = {
   title: "EMBER Coffee",
@@ -21,12 +22,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const user = await getCurrentUser();
+  const initialCart = user
+    ? await getCartPayload(user.id)
+    : { items: [], totalCents: 0, totalCount: 0 };
 
   return (
     <html lang="en">
       <body>
         <AuthProvider user={user ? { id: user.id, email: user.email } : null}>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider key={user?.id ?? "anonymous"} initialCart={initialCart}>
+            {children}
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
