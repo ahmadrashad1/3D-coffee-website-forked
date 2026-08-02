@@ -10,7 +10,7 @@ import { findMenuItem, formatPrice } from "@/lib/menu-data";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, totalCents, clear, hydrated } = useCart();
+  const { items, totalCents, clear } = useCart();
   const [customerName, setCustomerName] = useState("");
   const [contact, setContact] = useState("");
   const [pickupTime, setPickupTime] = useState("");
@@ -75,11 +75,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {!hydrated ? (
-            <p className="lead" aria-live="polite">
-              Loading your cart…
-            </p>
-          ) : items.length === 0 ? (
+          {items.length === 0 ? (
             <p className="lead">
               Your cart is empty. <a href="/menu">Return to the menu</a> to add something first.
             </p>

@@ -1,91 +1,76 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { findMenuItem } from "@/lib/menu-data";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type CartLine = { menuItemId: string; quantity: number };
 
+type CartPayload = { items: CartLine[]; totalCents: number; totalCount: number };
+
 type CartContextValue = {
   items: CartLine[];
-  addItem: (menuItemId: string) => void;
-  removeItem: (menuItemId: string) => void;
-  setQuantity: (menuItemId: string, quantity: number) => void;
+  addItem: (menuItemId: string) => Promise<void>;
+  removeItem: (menuItemId: string) => Promise<void>;
+  setQuantity: (menuItemId: string, quantity: number) => Promise<void>;
   clear: () => void;
   totalCents: number;
   totalCount: number;
-  hydrated: boolean;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "ember-cart";
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartLine[]>([]);
-  const [hydrated, setHydrated] = useState(false);
+export function CartProvider({
+  initialCart,
+  children,
+}: {
+  initialCart: CartPayload;
+  children: ReactNode;
+}) {
+  const [cart, setCart] = useState<CartPayload>(initialCart);
 
-  useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setItems(JSON.parse(stored));
-      } catch {
-        // ignore malformed storage
-      }
-    }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (hydrated) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    }
-  }, [items, hydrated]);
-
-  const addItem = (menuItemId: string) => {
-    setItems((prev) => {
-      const existing = prev.find((line) => line.menuItemId === menuItemId);
-      if (existing) {
-        return prev.map((line) =>
-          line.menuItemId === menuItemId ? { ...line, quantity: line.quantity + 1 } : line
-        );
-      }
-      return [...prev, { menuItemId, quantity: 1 }];
+  const addItem = async (menuItemId: string) => {
+    const res = await fetch("/api/cart/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ menuItemId }),
     });
-  };
-
-  const removeItem = (menuItemId: string) => {
-    setItems((prev) => prev.filter((line) => line.menuItemId !== menuItemId));
-  };
-
-  const setQuantity = (menuItemId: string, quantity: number) => {
-    if (quantity < 1) {
-      removeItem(menuItemId);
-      return;
+    if (res.ok) {
+      setCart(await res.json());
     }
-    setItems((prev) =>
-      prev.map((line) => (line.menuItemId === menuItemId ? { ...line, quantity } : line))
-    );
   };
 
-  const clear = () => setItems([]);
+  const removeItem = async (menuItemId: string) => {
+    const res = await fetch(`/api/cart/items/${encodeURIComponent(menuItemId)}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setCart(await res.json());
+    }
+  };
 
-  const { totalCents, totalCount } = useMemo(() => {
-    return items.reduce(
-      (acc, line) => {
-        const menuItem = findMenuItem(line.menuItemId);
-        if (!menuItem) return acc;
-        return {
-          totalCents: acc.totalCents + menuItem.priceCents * line.quantity,
-          totalCount: acc.totalCount + line.quantity,
-        };
-      },
-      { totalCents: 0, totalCount: 0 }
-    );
-  }, [items]);
+  const setQuantity = async (menuItemId: string, quantity: number) => {
+    const res = await fetch(`/api/cart/items/${encodeURIComponent(menuItemId)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quantity }),
+    });
+    if (res.ok) {
+      setCart(await res.json());
+    }
+  };
+
+  const clear = () => setCart({ items: [], totalCents: 0, totalCount: 0 });
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, setQuantity, clear, totalCents, totalCount, hydrated }}
+      value={{
+        items: cart.items,
+        addItem,
+        removeItem,
+        setQuantity,
+        clear,
+        totalCents: cart.totalCents,
+        totalCount: cart.totalCount,
+      }}
     >
       {children}
     </CartContext.Provider>
