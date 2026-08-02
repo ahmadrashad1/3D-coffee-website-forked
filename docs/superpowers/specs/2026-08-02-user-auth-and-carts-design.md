@@ -86,7 +86,7 @@ Each recomputes and returns `{ items, totalCents, totalCount }` (the same shape 
 
 - **`AuthModal`** (new component, structurally similar to `CartDrawer` — slide-in overlay): two modes, login and signup, toggleable within the same modal. On success: closes itself and calls `router.refresh()`.
 - **`Nav`**: logged-out shows a "Log in" trigger that opens `AuthModal`. Logged-in shows the account (email) and a "Log out" action (posts to `/api/auth/logout`, then `router.refresh()`). The cart icon/badge is unchanged in appearance, now just reflecting the server-backed cart.
-- **`AddToCartButton`**: reads `useAuth()`. Signed in → behaves exactly as today. Signed out → the button still renders normally, but clicking it shows a small inline message next to/below it ("Log in to add items", linking to open `AuthModal`) instead of calling the cart API — the user stays on `/menu`.
+- **`AddToCartButton`**: reads `useAuth()`. Signed in → behaves exactly as today. Signed out → the button renders identically, but clicking it opens `AuthModal` directly (via `openLogin()`) instead of calling the cart API — the user stays on `/menu`, the modal is an overlay, not a navigation. (Revised from an earlier two-step "inline prompt, then click a separate link" design — direct-open is simpler and matches "asks the user to log in first.")
 - **`/checkout`**: form fields (name/contact/pickup time) are unchanged. `POST /api/orders` now additionally requires a session (`401` without one) and stamps `userId` from the session onto the created `Order` — never from anything client-submitted, the same principle already applied to prices.
 
 ## Explicitly out of scope

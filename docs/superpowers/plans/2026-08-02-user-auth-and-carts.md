@@ -930,7 +930,6 @@ git commit -m "Add cart API routes (add/update/remove), all session-gated"
 - Modify: `app/layout.tsx`
 - Modify: `components/AddToCartButton.tsx`
 - Modify: `app/checkout/page.tsx`
-- Modify: `app/globals.css`
 
 **Interfaces:**
 - Consumes: `getCartPayload` (Task 4), `useAuth` (Task 3).
@@ -1087,30 +1086,18 @@ Replace the full contents of `components/AddToCartButton.tsx` with:
 ```tsx
 "use client";
 
-import { useState } from "react";
 import { useAuth } from "@/components/AuthContext";
 import { useCart } from "@/components/CartContext";
 
 export default function AddToCartButton({ menuItemId }: { menuItemId: string }) {
   const { user, openLogin } = useAuth();
   const { addItem } = useCart();
-  const [showPrompt, setShowPrompt] = useState(false);
 
   if (!user) {
     return (
-      <div className="add-to-cart-wrap">
-        <button type="button" className="add-to-cart" onClick={() => setShowPrompt(true)}>
-          Add to cart
-        </button>
-        {showPrompt && (
-          <p className="add-to-cart-prompt">
-            <button type="button" className="add-to-cart-prompt-link" onClick={openLogin}>
-              Log in
-            </button>{" "}
-            to add items.
-          </p>
-        )}
-      </div>
+      <button type="button" className="add-to-cart" onClick={openLogin}>
+        Add to cart
+      </button>
     );
   }
 
@@ -1122,7 +1109,7 @@ export default function AddToCartButton({ menuItemId }: { menuItemId: string }) 
 }
 ```
 
-(Clicking "Add to cart" while logged out reveals the inline prompt rather than doing anything else; clicking "Log in" inside that prompt opens the shared auth modal via `openLogin()` from context — the user never leaves `/menu`.)
+(Clicking "Add to cart" while logged out opens the shared auth modal directly via `openLogin()` from context — one click, no intermediate inline prompt. The button's label and appearance are identical either way; only the click behavior differs. The user stays on `/menu` — the modal is an overlay, not a navigation.)
 
 - [ ] **Step 4: Simplify checkout now that there's no loading window**
 
@@ -1156,36 +1143,29 @@ to:
 
 (Leave the rest of that conditional — the empty-cart message, the `checkout-grid` branch — exactly as it is; only the removed `!hydrated` branch and its condition change.)
 
-- [ ] **Step 5: Append add-to-cart gating CSS**
+(No new CSS needed for this — the button renders with the same `.add-to-cart` class either way, only its `onClick` differs.)
 
-Append to the end of `app/globals.css`:
-
-```css
-.add-to-cart-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.add-to-cart-prompt{margin:0;font-size:11px;color:var(--muted);text-align:right}
-.add-to-cart-prompt-link{background:none;border:0;padding:0;color:var(--copper);font:inherit;text-decoration:underline;cursor:pointer}
-```
-
-- [ ] **Step 6: Browser-verify the full account-owned cart flow**
+- [ ] **Step 5: Browser-verify the full account-owned cart flow**
 
 Using Playwright MCP (dev server running, `docker compose up -d db` up):
-1. Log out if currently logged in. Navigate to `/menu`, click "Add to cart" on Espresso — confirm the inline "Log in to add items" prompt appears (with a "Log in" control) instead of anything being added.
-2. Click that "Log in" control — confirm the auth modal opens. Log in with `demo@example.com` / `correcthorse` (from earlier tasks' testing).
-3. After login, click "Add to cart" on Espresso and Butter Croissant — confirm the cart drawer badge updates and shows both items.
+1. Log out if currently logged in. Navigate to `/menu`, click "Add to cart" on Espresso — confirm the auth modal opens directly (no item added, no intermediate prompt).
+2. Log in with `demo@example.com` / `correcthorse` (from earlier tasks' testing) — confirm the modal closes.
+3. Click "Add to cart" on Espresso and Butter Croissant — confirm the cart drawer badge updates and shows both items.
 4. Hard-reload the page (not client-side navigation) — confirm the cart still shows both items (proving it's server-backed, not `localStorage`).
 5. Log out — confirm the cart badge disappears/resets. Log back in as the same user — confirm the cart is still there (proving persistence is per-account, not per-browser-session).
+6. While logged out, confirm `/checkout` is unreachable in any meaningful sense — the cart is always empty for a logged-out session, so it shows the existing empty-cart message; there is no separate "please log in" gate needed on `/checkout` itself, since there's never anything to check out with.
 
 Expected: all of the above behave as described, no console errors.
 
-- [ ] **Step 7: Type-check**
+- [ ] **Step 6: Type-check**
 
 Run: `npx tsc --noEmit`
 Expected: exits 0.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add components/CartContext.tsx app/layout.tsx components/AddToCartButton.tsx app/checkout/page.tsx app/globals.css
+git add components/CartContext.tsx app/layout.tsx components/AddToCartButton.tsx app/checkout/page.tsx
 git commit -m "Make the cart account-owned: server-seeded, API-backed, gated behind auth"
 ```
 
@@ -1436,7 +1416,7 @@ Expected: exits 0, both `db` and `app` containers healthy/running (`docker compo
 
 Using Playwright MCP against `http://localhost:3000`:
 1. `/` and `/menu` load correctly (now server-rendered per request rather than static — confirm they still look and behave identically to before).
-2. Log out if a session persisted somehow (it won't, fresh volume) — confirm `/menu`'s "Add to cart" shows the inline log-in prompt.
+2. Log out if a session persisted somehow (it won't, fresh volume) — confirm `/menu`'s "Add to cart" opens the login/signup modal directly instead of adding anything.
 3. Sign up a brand new account (this container's Postgres volume is empty, so `demo@example.com` from earlier manual testing won't exist here).
 4. Add two different items to the cart, check out with a name/contact/pickup time, land on a correct `/order-confirmation/[id]`.
 5. Confirm `/admin/orders` shows that order with the correct account email in the new "Account" column.
