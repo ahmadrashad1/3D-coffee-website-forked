@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { CartProvider } from "@/components/CartContext";
+import { AuthProvider } from "@/components/AuthContext";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "EMBER Coffee",
@@ -13,15 +15,19 @@ export const viewport: Viewport = {
   themeColor: "#171411",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="en">
       <body>
-        <CartProvider>{children}</CartProvider>
+        <AuthProvider user={user ? { id: user.id, email: user.email } : null}>
+          <CartProvider>{children}</CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
