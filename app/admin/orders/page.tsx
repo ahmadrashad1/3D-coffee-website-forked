@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/menu-data";
 
 export const dynamic = "force-dynamic";
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminOrdersPage() {
   const orders = await prisma.order.findMany({

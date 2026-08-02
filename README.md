@@ -5,9 +5,10 @@ An Apple-style scroll film built from the supplied coffee video. The opening fil
 ## Run locally
 
 ```bash
+npm install
+cp .env.example .env
 docker compose up -d db
 npx prisma migrate dev
-npm install
 npm run dev
 ```
 
