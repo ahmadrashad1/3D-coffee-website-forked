@@ -12,6 +12,8 @@ npx prisma migrate dev
 npm run dev
 ```
 
+`.env` needs a real `JWT_SECRET` (the copied `.env.example` only has a placeholder) — generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` and paste it in before starting the dev server.
+
 Then open <http://localhost:3000/>.
 
 ## Build
@@ -39,7 +41,9 @@ The source film is 8 seconds at 1920×1080 / 24 FPS. Frames are exported at the 
 
 ## Ordering demo
 
-`/menu` has "Add to cart" on every item. The cart (top-right nav icon) leads to `/checkout`, which posts to `POST /api/orders` — Postgres stores the order via Prisma, prices are always recomputed server-side from `lib/menu-data.ts`. `/order-confirmation/[id]` shows the receipt; `/admin/orders` lists every order ever placed (no authentication — demo only, not for production use).
+Sign up or log in (top-right nav) to add items — logged-out visitors can browse `/menu` but can't add to a cart. Carts are stored in Postgres per account, not in the browser. Once signed in, "Add to cart" on any menu item works normally; the cart (top-right nav icon) leads to `/checkout`, which posts to `POST /api/orders` — Postgres stores the order via Prisma, prices are always recomputed server-side from `lib/menu-data.ts`, and the order is linked to the signed-in account. `/order-confirmation/[id]` shows the receipt; `/admin/orders` lists every order ever placed, including which account placed it (no authentication on this page — demo only, not for production use).
+
+Auth is a from-scratch implementation for this demo: passwords hashed with bcrypt, sessions as a signed JWT in an httpOnly cookie. No email verification, password reset, or OAuth yet.
 
 ## Content note
 
