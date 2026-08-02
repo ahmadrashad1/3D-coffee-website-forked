@@ -22,6 +22,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://ember:ember@db:5432/ember
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "3000:3000"
 

@@ -7,8 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  cartItems    CartItem[]
+  orders       Order[]
+}
+
+model CartItem {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  menuItemId String
+  quantity   Int
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, menuItemId])
+}
+
 model Order {
   id           Int         @id @default(autoincrement())
+  userId       Int
+  user         User        @relation(fields: [userId], references: [id])
   customerName String
   contact      String
   pickupTime   String
