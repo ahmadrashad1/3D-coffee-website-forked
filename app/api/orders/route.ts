@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { findMenuItem } from "@/lib/menu-data";
+import { getCurrentUser } from "@/lib/auth";
 
 type OrderLine = { menuItemId: unknown; quantity: unknown };
 
 export async function POST(request: Request) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
   const body = await request.json().catch(() => null);
 
   if (!body || typeof body !== "object") {
@@ -63,14 +69,19 @@ export async function POST(request: Request) {
 
   const totalCents = lines.reduce((sum, line) => sum + line.priceCents * line.quantity, 0);
 
-  const order = await prisma.order.create({
-    data: {
-      customerName: customerName.trim(),
-      contact: contact.trim(),
-      pickupTime: pickupTime.trim(),
-      totalCents,
-      items: { create: lines },
-    },
+  const order = await prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
+      data: {
+        userId: user.id,
+        customerName: customerName.trim(),
+        contact: contact.trim(),
+        pickupTime: pickupTime.trim(),
+        totalCents,
+        items: { create: lines },
+      },
+    });
+    await tx.cartItem.deleteMany({ where: { userId: user.id } });
+    return created;
   });
 
   return NextResponse.json({ id: order.id, totalCents: order.totalCents }, { status: 201 });
