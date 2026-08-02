@@ -19,13 +19,21 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({
+  userKey,
   initialCart,
   children,
 }: {
+  userKey: string | number;
   initialCart: CartPayload;
   children: ReactNode;
 }) {
   const [cart, setCart] = useState<CartPayload>(initialCart);
+  const [seededFor, setSeededFor] = useState(userKey);
+
+  if (seededFor !== userKey) {
+    setSeededFor(userKey);
+    setCart(initialCart);
+  }
 
   const addItem = async (menuItemId: string) => {
     const res = await fetch("/api/cart/items", {

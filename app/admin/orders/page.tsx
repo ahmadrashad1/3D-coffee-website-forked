@@ -7,7 +7,7 @@ export const metadata = { robots: { index: false, follow: false } };
 export default async function AdminOrdersPage() {
   const orders = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
-    include: { items: true, user: true },
+    include: { items: true, user: { select: { email: true } } },
   });
 
   return (
