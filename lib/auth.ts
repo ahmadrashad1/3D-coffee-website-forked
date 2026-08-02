@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "session";
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is not set");
+}
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export function hashPassword(password: string): Promise<string> {
@@ -57,5 +61,8 @@ export async function getCurrentUser() {
   const session = await verifySession(token);
   if (!session) return null;
 
-  return prisma.user.findUnique({ where: { id: session.userId } });
+  return prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { id: true, email: true, createdAt: true },
+  });
 }
