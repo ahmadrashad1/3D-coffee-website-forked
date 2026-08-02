@@ -30,7 +30,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider user={user ? { id: user.id, email: user.email } : null}>
-          <CartProvider key={user?.id ?? "anonymous"} initialCart={initialCart}>
+          <CartProvider userKey={user?.id ?? "anonymous"} initialCart={initialCart}>
             {children}
           </CartProvider>
         </AuthProvider>

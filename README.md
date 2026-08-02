@@ -16,6 +16,8 @@ npm run dev
 
 Then open <http://localhost:3000/>.
 
+> **Existing database?** This release adds a required `Order.userId` column. If you have an existing local database from an earlier version (e.g. one with orders already in it), the migration will fail because it can't backfill a required foreign key onto pre-existing rows. Wipe it first: `docker compose down -v`.
+
 ## Build
 
 ```bash
