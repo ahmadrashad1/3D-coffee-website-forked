@@ -5,10 +5,17 @@ import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "session";
 
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is not set");
+let cachedSecret: Uint8Array | undefined;
+
+function getSecret(): Uint8Array {
+  if (!cachedSecret) {
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not set");
+    }
+    cachedSecret = new TextEncoder().encode(process.env.JWT_SECRET);
+  }
+  return cachedSecret;
 }
-const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
@@ -23,12 +30,12 @@ async function signSession(userId: number): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(secret);
+    .sign(getSecret());
 }
 
 async function verifySession(token: string): Promise<{ userId: number } | null> {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     if (typeof payload.userId !== "number") return null;
     return { userId: payload.userId };
   } catch {
