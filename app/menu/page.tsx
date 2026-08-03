@@ -48,7 +48,13 @@ export default function MenuPage() {
                   .filter((item) => item.category === category)
                   .map((item) => (
                     <div className="menu-row" key={item.id}>
-                      <div>
+                      <img
+                        className="menu-row-image"
+                        src={item.image}
+                        alt={item.name}
+                        loading="lazy"
+                      />
+                      <div className="menu-row-info">
                         <strong>{item.name}</strong>
                         <span className="menu-desc">{item.description}</span>
                       </div>
