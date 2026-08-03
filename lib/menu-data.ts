@@ -20,8 +20,8 @@ export const menuItems: MenuItem[] = [
   { id: "cold-brew", category: "Cold Brew", name: "Cold Brew", description: "Steeped 18 hours, served over ice.", priceCents: 500, image: "/images/bean-crop.webp" },
   { id: "iced-latte", category: "Cold Brew", name: "Iced Latte", description: "Espresso, cold milk, plenty of ice.", priceCents: 550, image: "/images/lid-crop.webp" },
   { id: "sparkling-cold-brew", category: "Cold Brew", name: "Sparkling Cold Brew", description: "Cold brew, soda, a citrus twist.", priceCents: 600, image: "/images/origin.webp" },
-  { id: "butter-croissant", category: "Pastries", name: "Butter Croissant", description: "Baked fresh each morning.", priceCents: 375, image: "/images/coffee-barista.jpg" },
-  { id: "almond-financier", category: "Pastries", name: "Almond Financier", description: "Toasted almond, brown butter.", priceCents: 400, image: "/images/coffee-image.jpg" },
+  { id: "butter-croissant", category: "Pastries", name: "Butter Croissant", description: "Baked fresh each morning.", priceCents: 375, image: "/images/coffee-shop.jpg" },
+  { id: "almond-financier", category: "Pastries", name: "Almond Financier", description: "Toasted almond, brown butter.", priceCents: 400, image: "/images/coffee-barista.jpg" },
   { id: "banana-bread", category: "Pastries", name: "Banana Bread", description: "Studded with toasted walnuts.", priceCents: 425, image: "/images/coffee-shop.jpg" },
 ];
 
