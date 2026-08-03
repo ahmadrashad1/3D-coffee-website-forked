@@ -43,26 +43,23 @@ export default function MenuPage() {
           {menuCategories.map((category) => (
             <div className="menu-category" data-reveal key={category}>
               <h2 className="menu-category-title">{category}</h2>
-              <div className="menu-list">
+              <div className="menu-grid">
                 {menuItems
                   .filter((item) => item.category === category)
                   .map((item) => (
-                    <div className="menu-row" key={item.id}>
-                      <img
-                        className="menu-row-image"
-                        src={item.image}
-                        alt={item.name}
-                        loading="lazy"
-                      />
-                      <div className="menu-row-info">
-                        <strong>{item.name}</strong>
-                        <span className="menu-desc">{item.description}</span>
+                    <article className="menu-plate" key={item.id}>
+                      <div className="menu-plate-visual">
+                        <img src={item.image} alt={item.name} loading="lazy" />
                       </div>
-                      <div className="menu-row-actions">
-                        <span className="menu-price">{formatPrice(item.priceCents)}</span>
+                      <div className="menu-plate-body">
+                        <div className="menu-plate-head">
+                          <strong>{item.name}</strong>
+                          <span className="menu-price">{formatPrice(item.priceCents)}</span>
+                        </div>
+                        <span className="menu-desc">{item.description}</span>
                         <AddToCartButton menuItemId={item.id} />
                       </div>
-                    </div>
+                    </article>
                   ))}
               </div>
             </div>
