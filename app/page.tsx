@@ -185,9 +185,6 @@ export default function HomePage() {
                 gentle fruit brightness. The finish stays clean, whether you
                 drink it black or soften it with milk.
               </p>
-              <a className="text-link" href="#gallery">
-                See the ritual
-              </a>
             </div>
           </div>
         </section>
@@ -257,34 +254,6 @@ export default function HomePage() {
               <strong>Format</strong>
               <span>Whole bean · ground to order</span>
             </div>
-          </div>
-        </section>
-        <section className="section gallery" id="gallery" data-bg="dark">
-          <div className="gallery-grid">
-            <figure className="tall">
-              <img
-                src="/images/detail-lid.webp"
-                alt="EMBER cup lid lifting"
-                loading="lazy"
-              />
-              <figcaption>01 · The opening</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="/images/detail-beans.webp"
-                alt="Coffee beans in warm light"
-                loading="lazy"
-              />
-              <figcaption>02 · The roast</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="/images/gallery-final.webp"
-                alt="EMBER coffee cup hero view"
-                loading="lazy"
-              />
-              <figcaption>03 · The ritual</figcaption>
-            </figure>
           </div>
         </section>
         <section className="section quote">

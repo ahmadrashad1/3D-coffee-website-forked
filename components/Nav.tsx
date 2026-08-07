@@ -32,11 +32,6 @@ export default function Nav({ variant }: { variant: "home" | "menu" }) {
         ) : (
           <Link href="#craft">The roast</Link>
         )}
-        {variant === "menu" ? (
-          <a href={`${base}#gallery`}>Journal</a>
-        ) : (
-          <Link href="#gallery">Journal</Link>
-        )}
         <a href="/menu">Menu</a>
         {variant === "menu" ? (
           <a href={`${base}#about`}>About</a>
