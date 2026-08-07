@@ -31,11 +31,6 @@ export default function Footer({ variant }: { variant: "home" | "menu" }) {
           </div>
           <div className="footer-col">
             <h3>Visit</h3>
-            {variant === "menu" ? (
-              <a href={`${base}#gallery`}>Journal</a>
-            ) : (
-              <Link href="#gallery">Journal</Link>
-            )}
             <a href="mailto:hello@ember.coffee">Cafés</a>
             <a href="mailto:hello@ember.coffee">Stockists</a>
           </div>
