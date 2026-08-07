@@ -190,11 +190,33 @@ function drawFrame(i) {
   // Use cover-fit so the film always reaches every edge of the viewport.
   // The product stays centered; only excess background is cropped.
   const portrait = window.innerWidth < 700;
+  // Frames are shot landscape (16:9). A naive "cover" fit on a tall phone
+  // canvas crops down to a thin vertical sliver of each frame — the product
+  // reads as an illegible extreme close-up. Cap the zoom relative to the
+  // full-width ("contain") scale so mobile keeps more of the frame in view.
+  // Full-bleed and "not zoomed in" are mathematically opposed for a 16:9
+  // frame on a tall phone canvas, so this only pulls back moderately —
+  // the resulting sliver of background top/bottom is dissolved into a soft
+  // vignette below, rather than left as a hard letterboxed edge.
   const s = portrait
-    ? Math.max(cw / bmp.width, ch / bmp.height) * 0.9
+    ? Math.min(Math.max(cw / bmp.width, ch / bmp.height), (cw / bmp.width) * 3)
     : Math.max(cw / bmp.width, ch / bmp.height) * 1.02;
   const w = bmp.width * s, h = bmp.height * s;
-  ctx.drawImage(bmp, (cw - w) / 2, (ch - h) / 2, w, h);
+  const dx = (cw - w) / 2, dy = (ch - h) / 2;
+  ctx.drawImage(bmp, dx, dy, w, h);
+  if (portrait && dy > 0.5) {
+    const fade = Math.min(dy, ch * 0.16);
+    const top = ctx.createLinearGradient(0, dy, 0, dy + fade);
+    top.addColorStop(0, "#090806");
+    top.addColorStop(1, "rgba(9,8,6,0)");
+    ctx.fillStyle = top;
+    ctx.fillRect(0, dy, cw, fade);
+    const bottom = ctx.createLinearGradient(0, dy + h - fade, 0, dy + h);
+    bottom.addColorStop(0, "rgba(9,8,6,0)");
+    bottom.addColorStop(1, "#090806");
+    ctx.fillStyle = bottom;
+    ctx.fillRect(0, dy + h - fade, cw, fade);
+  }
   state.current = j;
 }
 
@@ -290,14 +312,16 @@ resize();
 // In-page nav links (brandnav, skip-link) still glide smoothly on click,
 // without a global scroll-behavior:smooth fighting the frame-scrubber's
 // raw scrollY reads on every wheel/trackpad tick.
-for (const a of document.querySelectorAll('a[href^="#"]')) {
-  a.addEventListener("click", (e) => {
-    const target = document.getElementById(a.getAttribute("href").slice(1));
-    if (!target) return;
-    e.preventDefault();
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-}
+// Delegated on document (not bound per-node at boot) so links rendered
+// later — e.g. inside the mobile nav drawer — get the same behavior.
+document.addEventListener("click", (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const target = document.getElementById(a.getAttribute("href").slice(1));
+  if (!target) return;
+  e.preventDefault();
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 
 loadManifest()
   .then((m) => {
