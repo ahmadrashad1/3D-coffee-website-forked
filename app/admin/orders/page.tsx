@@ -15,34 +15,36 @@ export default async function AdminOrdersPage() {
       <section className="section">
         <p className="kicker">Demo only — not authenticated</p>
         <h1 className="display">Orders</h1>
-        <table className="admin-orders-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Account</th>
-              <th>Customer</th>
-              <th>Contact</th>
-              <th>Pickup</th>
-              <th>Items</th>
-              <th>Total</th>
-              <th>Placed</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td>#{order.id}</td>
-                <td>{order.user.email}</td>
-                <td>{order.customerName}</td>
-                <td>{order.contact}</td>
-                <td>{order.pickupTime}</td>
-                <td>{order.items.map((item) => `${item.name} ×${item.quantity}`).join(", ")}</td>
-                <td>{formatPrice(order.totalCents)}</td>
-                <td>{order.createdAt.toLocaleString()}</td>
+        <div className="admin-orders-table-wrap">
+          <table className="admin-orders-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Account</th>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Pickup</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Placed</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id}>
+                  <td>#{order.id}</td>
+                  <td>{order.user.email}</td>
+                  <td>{order.customerName}</td>
+                  <td>{order.contact}</td>
+                  <td>{order.pickupTime}</td>
+                  <td>{order.items.map((item) => `${item.name} ×${item.quantity}`).join(", ")}</td>
+                  <td>{formatPrice(order.totalCents)}</td>
+                  <td>{order.createdAt.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   );
