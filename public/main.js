@@ -129,16 +129,30 @@ async function preload() {
   state.ready = true;
   loader.classList.add("done");
 
-  // background: fetch remaining blobs in order, limited concurrency
-  let next = EAGER;
+  // Background-fill the rest, but always fetch whichever remaining frame is
+  // closest to wherever the user currently is — not simply in sequence. A
+  // real internet connection can't keep a purely sequential queue ahead of
+  // a fast scroll; distance-to-playhead is what actually keeps the film
+  // smooth instead of stalling on frames that haven't arrived yet.
+  const remaining = new Set();
+  for (let i = EAGER; i < count; i++) remaining.add(i);
+
+  const CONCURRENCY = 6;
   await Promise.all(
-    Array.from({ length: 4 }, async () => {
-      while (next < count) {
-        const i = next++;
+    Array.from({ length: CONCURRENCY }, async () => {
+      while (remaining.size) {
+        const target = Math.round(state.smooth);
+        let closest = -1, bestDist = Infinity;
+        for (const i of remaining) {
+          const d = Math.abs(i - target);
+          if (d < bestDist) { bestDist = d; closest = i; }
+        }
+        if (closest === -1) break;
+        remaining.delete(closest);
         try {
-          await fetchBlob(i);
+          await fetchBlob(closest);
         } catch (err) {
-          console.warn(`background frame ${i} failed after retries`, err);
+          console.warn(`background frame ${closest} failed after retries`, err);
         }
       }
     })
