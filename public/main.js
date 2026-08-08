@@ -110,12 +110,11 @@ function manageWindow(center) {
 async function preload() {
   const { count } = state;
   // Gates the loader: fetched (not just the sequential opening) before the
-  // page is handed to the user. A small eager slice made the initial load
-  // fast but let a normal first scroll quickly outrun what had been
-  // fetched, showing stale frames until the background fill caught up —
-  // buffer enough up front that a typical first scroll-through doesn't
-  // outrun it, and let only the tail stream in behind the scenes.
-  const EAGER = Math.min(Math.ceil(count * 0.3), 140);
+  // page is handed to the user. Buffer at least half the sequence up front
+  // so a typical first scroll-through has real data the whole way, at the
+  // cost of a longer initial wait — only the tail streams in behind the
+  // scenes after handoff.
+  const EAGER = Math.min(Math.ceil(count * 0.5), 140);
 
   // A single frame's retries exhausting (allSettled, not all) must not block
   // the rest of the site from ever becoming interactive.
