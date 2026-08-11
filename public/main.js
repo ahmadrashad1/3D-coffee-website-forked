@@ -109,58 +109,28 @@ function manageWindow(center) {
 
 async function preload() {
   const { count } = state;
-  // Gates the loader: fetched (not just the sequential opening) before the
-  // page is handed to the user. Buffer at least half the sequence up front
-  // so a typical first scroll-through has real data the whole way, at the
-  // cost of a longer initial wait — only the tail streams in behind the
-  // scenes after handoff.
-  const EAGER = Math.min(Math.ceil(count * 0.5), 140);
+  // Gates the loader: every frame is fetched before the page is handed to
+  // the user. Streaming in a tail after handoff meant the first scroll could
+  // race the network for whatever hadn't arrived yet, which read as lag —
+  // waiting for the whole sequence up front costs a longer initial load but
+  // guarantees the scrub is smooth from frame one.
 
   // A single frame's retries exhausting (allSettled, not all) must not block
   // the rest of the site from ever becoming interactive.
   let done = 0;
   await Promise.allSettled(
-    Array.from({ length: EAGER }, (_, i) =>
+    Array.from({ length: count }, (_, i) =>
       fetchBlob(i)
         .then(() => {
           done++;
-          loadbar.style.width = `${(done / EAGER) * 100}%`;
+          loadbar.style.width = `${(done / count) * 100}%`;
         })
-        .catch((err) => console.warn(`eager frame ${i} failed after retries`, err))
+        .catch((err) => console.warn(`frame ${i} failed after retries`, err))
     )
   );
   await decode(0);
   state.ready = true;
   loader.classList.add("done");
-
-  // Background-fill the rest, but always fetch whichever remaining frame is
-  // closest to wherever the user currently is — not simply in sequence. A
-  // real internet connection can't keep a purely sequential queue ahead of
-  // a fast scroll; distance-to-playhead is what actually keeps the film
-  // smooth instead of stalling on frames that haven't arrived yet.
-  const remaining = new Set();
-  for (let i = EAGER; i < count; i++) remaining.add(i);
-
-  const CONCURRENCY = 6;
-  await Promise.all(
-    Array.from({ length: CONCURRENCY }, async () => {
-      while (remaining.size) {
-        const target = Math.round(state.smooth);
-        let closest = -1, bestDist = Infinity;
-        for (const i of remaining) {
-          const d = Math.abs(i - target);
-          if (d < bestDist) { bestDist = d; closest = i; }
-        }
-        if (closest === -1) break;
-        remaining.delete(closest);
-        try {
-          await fetchBlob(closest);
-        } catch (err) {
-          console.warn(`background frame ${closest} failed after retries`, err);
-        }
-      }
-    })
-  );
 }
 
 /* ── drawing ───────────────────────────────────────────── */
